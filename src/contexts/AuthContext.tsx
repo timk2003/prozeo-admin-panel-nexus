@@ -12,7 +12,7 @@ type AuthContextType = {
   isAdmin: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<{ user: User | null; error?: Error }>;
   signOut: () => Promise<void>;
 };
 
@@ -130,12 +130,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
 
-      if (data.user) {
-        toast.success('Account created! Please check your email for verification.');
-      }
+      // Return the user object so we can handle it in the component
+      return { user: data.user };
     } catch (error: any) {
       toast.error(error.message || 'Error creating account');
       console.error('Sign up error:', error);
+      return { user: null, error };
     }
   };
 
