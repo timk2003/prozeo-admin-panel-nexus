@@ -84,37 +84,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Sign in with email and password
   const signIn = async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      if (error) {
-        throw error;
-      }
-
-      if (data.user) {
-        // Check if user is admin
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
-
-        if (profileData?.role !== 'admin') {
-          // If not admin, sign them out
-          await supabase.auth.signOut();
-          toast.error("Access denied. Only administrators can access the dashboard.");
-          return;
-        }
-
-        toast.success('Signed in successfully');
-        navigate('/dashboard');
-      }
-    } catch (error: any) {
+    if (error) {
       toast.error(error.message || 'Error signing in');
-      console.error('Sign in error:', error);
+      throw error;
+    }
+
+    if (data.user) {
+      // Check if user is admin
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+      
+      if (profileError) {
+        console.error('Error fetching user role:', profileError);
+      }
+
+      if (profileData?.role !== 'admin') {
+        // If not admin, sign them out
+        await supabase.auth.signOut();
+        toast.error("Access denied. Only administrators can access the dashboard.");
+        throw new Error("Access denied. Only administrators can access the dashboard.");
+      }
+
+      toast.success('Signed in successfully');
+      navigate('/dashboard');
     }
   };
 
