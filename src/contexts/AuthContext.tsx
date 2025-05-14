@@ -4,6 +4,7 @@ import { Session, User } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from '@/integrations/supabase/types';
 
 type AuthContextType = {
   user: User | null;
@@ -130,13 +131,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.user) {
-        // Create a profile entry (initially not admin)
-        await supabase.from('profiles').insert({
-          id: data.user.id,
-          email: data.user.email,
-          role: 'user',  // Default role, admin can change later
-        });
-
         toast.success('Account created! Please check your email for verification.');
       }
     } catch (error: any) {
