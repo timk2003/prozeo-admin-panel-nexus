@@ -23,9 +23,12 @@ const Register = () => {
     try {
       const result = await signUp(email, password);
       if (result?.user) {
-        toast.success('Account created successfully!');
+        toast.success('Account created successfully! Please sign in.');
         navigate('/login');
       }
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      toast.error(error?.message || 'Failed to create account. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +67,7 @@ const Register = () => {
                   required
                   autoComplete="email"
                   className="w-full"
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -80,6 +84,7 @@ const Register = () => {
                   required
                   autoComplete="new-password"
                   minLength={8}
+                  disabled={isLoading}
                 />
                 <p className="text-xs text-muted-foreground">
                   Password must be at least 8 characters

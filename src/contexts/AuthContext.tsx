@@ -26,6 +26,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      setUser(session?.user || null);
+
+      if (session?.user) {
+        // Check user role
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        setIsAdmin(profileData?.role === 'admin');
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    // Get initial session
     const getSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
@@ -56,25 +76,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     getSession();
-
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-      setUser(session?.user || null);
-
-      if (session?.user) {
-        // Check user role
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-
-        setIsAdmin(profileData?.role === 'admin');
-      } else {
-        setIsAdmin(false);
-      }
-    });
 
     // Clean up subscription on unmount
     return () => {
@@ -133,9 +134,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Return the user object so we can handle it in the component
       return { user: data.user };
     } catch (error: any) {
-      toast.error(error.message || 'Error creating account');
       console.error('Sign up error:', error);
-      return { user: null, error };
+      throw error;
     }
   };
 
