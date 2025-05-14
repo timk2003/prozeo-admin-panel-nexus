@@ -5,7 +5,7 @@ import {
   LayoutDashboard, 
   Mail, 
   Cloud, 
-  Analytics,
+  BarChart,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -49,7 +49,7 @@ const navItems: NavItem[] = [
   {
     title: 'Analytics',
     href: 'https://analytics.prozeo.me',
-    icon: Analytics,
+    icon: BarChart,
     external: true,
   },
   {

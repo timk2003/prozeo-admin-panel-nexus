@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LayoutDashboard, Mail, Cloud, Analytics, Users, Server } from "lucide-react";
+import { LayoutDashboard, Mail, Cloud, BarChart, Users, Server } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
@@ -57,7 +57,7 @@ const Dashboard = () => {
     },
     {
       title: "Analytics",
-      icon: Analytics,
+      icon: BarChart,
       href: "https://analytics.prozeo.me",
       description: "Website traffic & user insights",
       external: true,
